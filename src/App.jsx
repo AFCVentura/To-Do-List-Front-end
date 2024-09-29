@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
-import "./App.css";
 import AuthPage from "./pages/AuthPage";
 import HomePage from "./pages/HomePage";
-import Test from "./pages/Test";
 
 function App() {
   
@@ -12,7 +10,6 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />}></Route>
-          <Route path="/test" element={<Test />} />
           <Route path="/auth" element={<Navigate to="/auth/login" />}></Route>
           <Route
             path="/auth/login"
