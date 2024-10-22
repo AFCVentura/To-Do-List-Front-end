@@ -6,13 +6,9 @@ import App from "./App.jsx";
 // css (bootstrap and sass)
 import "./index.css";
 
-// contexts
-import { TokenContextProvider } from "./contexts/TokenContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <TokenContextProvider>
       <App />
-    </TokenContextProvider>
   </StrictMode>
 );

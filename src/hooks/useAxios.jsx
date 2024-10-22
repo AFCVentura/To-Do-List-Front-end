@@ -6,19 +6,21 @@ axios.defaults.baseURL = "http://localhost:8080/api";
 export const useAxios = (params) => {
   const [axiosParams, setAxiosParams] = useState(params || "");
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [response, setResponse] = useState([]);
 
-  const fetchData = () => {
-    axios
+  const fetchData = async () => {
+    await axios
       .request(axiosParams)
       .then((res) => {
+        setError("");
+        setLoading(true)
         console.log("response: ", res.data);
-        setResponse(res.data);
+        setResponse(res);
       })
       .catch((err) => {
-        setError(err);
+        setError("Ocorre um erro inesperado");
       })
       .finally(() => {
         setLoading(false);

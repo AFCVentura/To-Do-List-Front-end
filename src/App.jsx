@@ -1,23 +1,58 @@
-import { useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import AuthPage from "./pages/AuthPage";
 import HomePage from "./pages/HomePage";
 
 function App() {
-  
+  const [token, setToken] = useState(sessionStorage.getItem("token"));
+
+  useEffect(() => {
+    setToken(sessionStorage.getItem("token"));
+  }, [sessionStorage]);
+
   return (
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<HomePage />}></Route>
-          <Route path="/auth" element={<Navigate to="/auth/login" />}></Route>
+          <Route
+            path="/auth"
+            element={
+              !token ? (
+                <Navigate to="/auth/login" />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
           <Route
             path="/auth/login"
-            element={<AuthPage authType="login" />}
-          ></Route>
+            element={
+              !token ? (
+                <AuthPage authType="login" />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
           <Route
             path="/auth/register"
-            element={<AuthPage authType="register" />}
+            element={
+              !token ? (
+                <AuthPage authType="register" />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
+          <Route
+            path="/"
+            element={
+              !sessionStorage.getItem("token") ? (
+                <Navigate to="/auth/login" />
+              ) : (
+                <HomePage />
+              )
+            }
           ></Route>
         </Routes>
       </BrowserRouter>

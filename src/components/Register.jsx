@@ -3,10 +3,11 @@ import { useAxios } from "../hooks/useAxios";
 import ReactPasswordChecklist from "react-password-checklist";
 import { Button, Col, Container, Form, Image, Row } from "react-bootstrap";
 import VectorImage from "../assets/register.svg";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
-
-
+  // React Router to change to Login screen
+  const navigate = useNavigate();
 
   // for the inputs
   const [name, setName] = useState("");
@@ -28,17 +29,15 @@ export default function Register() {
   const passwordInput = useRef();
   const confirmPasswordInput = useRef();
   const form = useRef();
+  const submitButton = useRef();
 
   const [{ response, loading, error }, axiosRequest] = useAxios();
 
-  useEffect(() => {
-
-  }, [response])
+  useEffect(() => {}, [response]);
 
   // Verify if the password is valid according to all the rules specified
   const passwordVerification = (isValid, failedRules) => {
     if (isValid) {
-
       setIsValidPassword(true);
       return;
     }
@@ -98,12 +97,10 @@ export default function Register() {
       return;
     }
     setFormValidated(true);
-
     axiosRequest({
       method: "POST",
       url: "/auth/register",
       headers: {
-        accept: "*/*",
         "Content-Type": "application/json",
       },
       data: {
@@ -112,6 +109,10 @@ export default function Register() {
         password,
       },
     });
+    if (!error) {
+      submitButton.current.setAttribute("disabled", true);
+      navigate('/auth/login')
+    }
   };
 
   return (
@@ -250,9 +251,34 @@ export default function Register() {
                       }}
                     ></ReactPasswordChecklist>
                     <div className="d-grid">
-                      <Button type="submit" variant="primary" size="lg">
-                        Registrar-se
-                      </Button>
+                      {error ? (
+                        <Button
+                          ref={submitButton}
+                          type="submit"
+                          variant="danger"
+                          size="lg"
+                        >
+                          {error ?? "Ocorreu um erro inesperado"}
+                        </Button>
+                      ) : loading ? (
+                        <Button
+                          ref={submitButton}
+                          type="submit"
+                          variant="primary"
+                          size="lg"
+                        >
+                          Carregando
+                        </Button>
+                      ) : (
+                        <Button
+                          ref={submitButton}
+                          type="submit"
+                          variant="primary"
+                          size="lg"
+                        >
+                          Registrar-se
+                        </Button>
+                      )}
                     </div>
                   </Form>
                 </Container>
