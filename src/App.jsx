@@ -2,14 +2,10 @@ import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import AuthPage from "./pages/AuthPage";
 import HomePage from "./pages/HomePage";
+import AuthenticatedRoute from "./components/AuthenticatedRoute";
+import NotAuthenticatedRoute from "./components/NotAuthenticatedRoute";
 
 function App() {
-  const [token, setToken] = useState(sessionStorage.getItem("token"));
-
-  useEffect(() => {
-    setToken(sessionStorage.getItem("token"));
-  }, [sessionStorage]);
-
   return (
     <>
       <BrowserRouter>
@@ -17,41 +13,33 @@ function App() {
           <Route
             path="/auth"
             element={
-              !token ? (
+              <AuthenticatedRoute>
                 <Navigate to="/auth/login" />
-              ) : (
-                <Navigate to="/" />
-              )
+              </AuthenticatedRoute>
             }
           />
           <Route
             path="/auth/login"
             element={
-              !token ? (
-                <AuthPage authType="login" />
-              ) : (
-                <Navigate to="/" />
-              )
+              <AuthenticatedRoute>
+                <AuthPage key="login" authType="login" />
+              </AuthenticatedRoute>
             }
           />
           <Route
             path="/auth/register"
             element={
-              !token ? (
-                <AuthPage authType="register" />
-              ) : (
-                <Navigate to="/" />
-              )
+              <AuthenticatedRoute>
+                <AuthPage key="register" authType="register" />
+              </AuthenticatedRoute>
             }
           />
           <Route
             path="/"
             element={
-              !sessionStorage.getItem("token") ? (
-                <Navigate to="/auth/login" />
-              ) : (
+              <NotAuthenticatedRoute>
                 <HomePage />
-              )
+              </NotAuthenticatedRoute>
             }
           ></Route>
         </Routes>

@@ -3,7 +3,7 @@ import { useAxios } from "../hooks/useAxios";
 import ReactPasswordChecklist from "react-password-checklist";
 import { Button, Col, Container, Form, Image, Row } from "react-bootstrap";
 import VectorImage from "../assets/register.svg";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Register() {
   // React Router to change to Login screen
@@ -111,7 +111,7 @@ export default function Register() {
     });
     if (!error) {
       submitButton.current.setAttribute("disabled", true);
-      navigate('/auth/login')
+      navigate("/auth/login");
     }
   };
 
@@ -250,7 +250,7 @@ export default function Register() {
                         margin: "1rem 0 1rem 0",
                       }}
                     ></ReactPasswordChecklist>
-                    <div className="d-grid">
+                    <div className="d-grid text-center lh-1">
                       {error ? (
                         <Button
                           ref={submitButton}
@@ -279,6 +279,8 @@ export default function Register() {
                           Registrar-se
                         </Button>
                       )}
+                      <p className="mb-0 mt-2">Já possui uma conta?</p>
+                      <Link to="/auth/login">Faça login para entrar</Link>
                     </div>
                   </Form>
                 </Container>
