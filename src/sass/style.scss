@@ -1,0 +1,36 @@
+// Variables go up here
+$primary: #11463c;
+
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+
+:root {
+  --bs-border-color: #11463c;
+}
+
+
+
+.form-control.no-validate:valid {
+  border-color: $input-border-color;
+  padding: $input-padding-x;
+  background: $input-bg;
+}
+
+.Title {
+  color: $primary;
+}
+
+.Background {
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+
+  background-color: $primary;
+}
+
+.ContainerRow {
+  height: 100vh;
+}
+
+.AuthContainer {
+  background-color: white;
+}
