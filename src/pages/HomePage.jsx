@@ -19,7 +19,7 @@ const HomePage = () => {
 
     const fetchLists = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/list/1/all', axiosConfig);
+            const response = await axios.get('http://localhost:8080/api/list/all', axiosConfig);
             setLists(response.data);
         } catch (error) {
             console.error("Erro ao buscar listas:", error);
@@ -30,7 +30,7 @@ const HomePage = () => {
         try {
             const response = await axios.post(
                 'http://localhost:8080/api/list',
-                { name: listName, user: { id: 1 } },
+                { name: listName, user: null },
                 axiosConfig
             );
             setLists([...lists, response.data]);
