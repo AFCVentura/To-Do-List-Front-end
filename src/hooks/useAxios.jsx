@@ -20,7 +20,7 @@ export const useAxios = (params) => {
         setResponse(res);
       })
       .catch((err) => {
-        setError("Ocorre um erro inesperado");
+        setError("Ocorreu um erro inesperado");
       })
       .finally(() => {
         setLoading(false);

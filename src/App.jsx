@@ -4,6 +4,7 @@ import AuthPage from "./pages/AuthPage";
 import HomePage from "./pages/HomePage";
 import AuthenticatedRoute from "./components/AuthenticatedRoute";
 import NotAuthenticatedRoute from "./components/NotAuthenticatedRoute";
+import Config from "./pages/Config";
 
 function App() {
   return (
@@ -39,6 +40,14 @@ function App() {
             element={
               <NotAuthenticatedRoute>
                 <HomePage />
+              </NotAuthenticatedRoute>
+            }
+          ></Route>
+          <Route
+            path="/config"
+            element={
+              <NotAuthenticatedRoute>
+                <Config />
               </NotAuthenticatedRoute>
             }
           ></Route>
