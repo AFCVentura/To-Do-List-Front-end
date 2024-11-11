@@ -4,6 +4,7 @@ import ReactPasswordChecklist from "react-password-checklist";
 import { Button, Col, Container, Form, Image, Row } from "react-bootstrap";
 import VectorImage from "../assets/register.svg";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Register() {
   // React Router to change to Login screen
@@ -14,6 +15,11 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  // error and loading
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [response, setResponse] = useState(false);
 
   // for validation
   const [isValidName, setIsValidName] = useState(false);
@@ -30,8 +36,6 @@ export default function Register() {
   const confirmPasswordInput = useRef();
   const form = useRef();
   const submitButton = useRef();
-
-  const [{ response, loading, error }, axiosRequest] = useAxios();
 
   useEffect(() => {}, [response]);
 
@@ -97,23 +101,45 @@ export default function Register() {
       return;
     }
     setFormValidated(true);
-    axiosRequest({
-      method: "POST",
-      url: "/auth/register",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: {
-        name,
-        email,
-        password,
-      },
-    });
-    if (!error) {
+
+    axios
+      .request({
+        method: "POST",
+        url: "/auth/register",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          name,
+          email,
+          password,
+        },
+      })
+      .then((res) => {
+        setError("");
+        setLoading(true);
+        console.log("response: ", res.data);
+        setResponse(res);
+      })
+      .catch((err) => {
+        setError("Ocorreu um erro inesperado");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+
+    if (!error && !loading && formValidated) {
       submitButton.current.setAttribute("disabled", true);
       navigate("/auth/login");
     }
   };
+
+  useEffect(() => {
+    if (!error && !loading && formValidated) {
+      submitButton.current.setAttribute("disabled", true);
+      navigate("/auth/login");
+    }
+  }, [loading, error]);
 
   return (
     <Container fluid className="Background">
