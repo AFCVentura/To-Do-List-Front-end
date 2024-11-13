@@ -4,10 +4,14 @@ import { useNavigate } from "react-router-dom";
 import VectorImage from "../assets/register.svg";
 import Logout from "../assets/logout.svg";
 import DeleteAccount from "../assets/deleteAccount.svg";
+import axios from "axios";
 
 const Config = () => {
   const [isOnLogoutScreen, setIsOnLogoutScreen] = useState(false);
   const [isOnDeleteAccountScreen, setIsOnDeleteAccountScreen] = useState(false);
+
+  const token = sessionStorage.getItem("token");
+  const axiosConfig = { headers: { Authorization: `Bearer ${token}` } };
 
   const navigate = useNavigate();
 
@@ -30,7 +34,15 @@ const Config = () => {
     navigate("/auth");
   };
 
-
+  const handleDeleteAccount = async () => {
+    try {
+      await axios.delete(`http://localhost:8080/api/user`, axiosConfig);
+      sessionStorage.setItem("token", "");
+      navigate("/auth/register");
+    } catch (error) {
+      console.error("Erro ao apagar conta:", error);
+    }
+  };
 
   return (
     <Container fluid className="vh-100 w-100 p-0 m-0">
@@ -142,7 +154,7 @@ const Config = () => {
                     <Button
                       variant="danger"
                       size="lg"
-                      onClick={handleDisconnect}
+                      onClick={handleDeleteAccount}
                     >
                       Sim
                     </Button>

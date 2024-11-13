@@ -356,7 +356,9 @@ const HomePage = () => {
                         />
                       </Col>
                       <Col xs="4">
-                        <Button className="w-100">Adicionar Tarefa</Button>
+                        <Button type="submit" className="w-100">
+                          Adicionar Tarefa
+                        </Button>
                       </Col>
                     </Row>
                   </Container>
