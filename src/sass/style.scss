@@ -1,13 +1,12 @@
 // Variables go up here
 $primary: #11463c;
+$info: #0d6efd;
 
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
 
 :root {
   --bs-border-color: #11463c;
 }
-
-
 
 .form-control.no-validate:valid {
   border-color: $input-border-color;

@@ -25,6 +25,11 @@ const HomePage = () => {
   const [wantToAddList, setWantToAddList] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedListId, setSelectedListId] = useState(null);
+  const [isEditingItemName, setIsEditingItemName] = useState(false);
+  const [newItemName, setNewItemName] = useState("");
+  const [selectedItemId, setSelectedItemId] = useState(null);
+  const [isEditingListName, setIsEditingListName] = useState(false);
+  const [newListName, setNewListName] = useState("");
 
   const token = sessionStorage.getItem("token");
   const axiosConfig = { headers: { Authorization: `Bearer ${token}` } };
@@ -156,6 +161,58 @@ const HomePage = () => {
     setSelectedListId(null);
   };
 
+  const openEditItemModal = (id) => {
+    setIsEditingItemName(true);
+    setSelectedItemId(id);
+  };
+
+  const closeEditItemModal = () => {
+    setIsEditingItemName(false);
+  };
+
+  const handleEditItem = async (e, id, newDescription) => {
+    e.preventDefault();
+    try {
+      await axios.patch(
+        `http://localhost:8080/api/item/${id}`,
+        { description: newDescription },
+        axiosConfig
+      );
+      setItems(
+        items.map((item) =>
+          item.id === id ? { ...item, description: newDescription } : item
+        )
+      );
+    } catch (error) {
+      console.error("Erro ao atualizar o nome da tarefa:", error);
+    } finally {
+      closeEditItemModal();
+    }
+  };
+
+  const handleEditList = async (e, id, newListName) => {
+    e.preventDefault();
+    try {
+      await axios.patch(
+        `http://localhost:8080/api/list/${id}`,
+        { name: newListName },
+        axiosConfig
+      );
+      setListName(newListName);
+      setCurrentListName(newListName);
+      setLists(
+        lists.map((list) =>
+          list.id === id ? { ...list, name: newListName } : list
+        )
+      );
+    } catch (error) {
+      console.error("Erro ao atualizar o nome da lista:", error);
+    } finally {
+      setNewListName("");
+      setIsEditingListName(!isEditingListName);
+    }
+  };
+
   return (
     <Container fluid className="vh-100 w-100 p-0 m-0">
       <Row className="p-0 m-0">
@@ -241,7 +298,52 @@ const HomePage = () => {
           <Container fluid className="vh-100 p-0 ps-5">
             {currentListId && (
               <div className="pt-4">
-                <h1 className="text-primary">{currentListName}</h1>
+                {/* LISTA ABERTA */}
+                <Container fluid="true" className="mb-4">
+                  <Form
+                    className="h-100"
+                    onSubmit={(e) => {
+                      handleEditList(e, currentListId, newListName);
+                    }}
+                  >
+                    <Row className="w-100">
+                      <Col xs="4">
+                        <h1 className="text-primary mb-0">{currentListName}</h1>
+                      </Col>
+                      <Col xs="6" className="p-0">
+                        {isEditingListName && (
+                          <Form.Control
+                            type="text"
+                            placeholder="Novo nome da lista"
+                            value={newListName}
+                            onChange={(e) => setNewListName(e.target.value)}
+                            className="h-100"
+                          />
+                        )}
+                      </Col>
+                      <Col xs="2">
+                        <Button
+                          type={
+                            isEditingListName && newListName
+                              ? "submit"
+                              : "button"
+                          }
+                          variant="info"
+                          onClick={() => {
+                            (isEditingListName && newListName) ||
+                              setIsEditingListName(!isEditingListName);
+                          }}
+                          className="h-100 w-100"
+                        >
+                          {isEditingListName && newListName
+                            ? "Enviar"
+                            : "Editar Lista"}
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Form>
+                </Container>
+                {/* ADICIONAR LISTA */}
                 <Form onSubmit={handleCreateItem}>
                   <Container fluid>
                     <Row className="w-100">
@@ -285,14 +387,24 @@ const HomePage = () => {
                             handleToggleItemStatus(item.id, item.state)
                           }
                         />
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          onClick={() => handleDeleteItem(item.id)}
-                          className="ms-2"
-                        >
-                          Deletar
-                        </Button>
+                        <div className="d-flex gap-2">
+                          <Button
+                            title="Editar"
+                            variant="info"
+                            size="sm"
+                            onClick={() => openEditItemModal(item.id)}
+                          >
+                            <i className="bi bi-pencil-square"></i>
+                          </Button>
+                          <Button
+                            title="Excluir"
+                            variant="danger"
+                            size="sm"
+                            onClick={() => handleDeleteItem(item.id)}
+                          >
+                            <i className="bi bi-trash-fill"></i>
+                          </Button>
+                        </div>
                       </ListGroup.Item>
                     ))}
                   </ListGroup>
@@ -330,6 +442,33 @@ const HomePage = () => {
           >
             Apagar
           </Button>
+        </Modal.Body>
+      </Modal>
+
+      {/* EDITAR ITEM */}
+      <Modal show={isEditingItemName} onHide={closeEditItemModal}>
+        <Modal.Header className="modal-content">
+          <h2>Digite o novo nome para a tarefa</h2>
+        </Modal.Header>
+        <Modal.Body>
+          <Form
+            onSubmit={(e) => {
+              handleEditItem(e, selectedItemId, newItemName);
+            }}
+          >
+            <Form.Control
+              type="text"
+              placeholder="Digite o novo nome da tarefa"
+              value={newItemName}
+              onChange={(e) => setNewItemName(e.target.value)}
+            />
+            <div className="d-flex justify-content-between mt-2">
+              <Button onClick={closeEditItemModal}>Cancelar</Button>
+              <Button variant="info" type="submit">
+                Atualizar
+              </Button>
+            </div>
+          </Form>
         </Modal.Body>
       </Modal>
     </Container>
