@@ -27,9 +27,19 @@ $info: #0d6efd;
 }
 
 .ContainerRow {
-  height: 100vh;
+  min-height: 100vh;
 }
 
 .AuthContainer {
   background-color: white;
+}
+
+#Sidebar {
+  height: 100vh;
+}
+
+@media screen and (max-width: 576px) {
+  #Sidebar {
+    height: auto;
+  }
 }

@@ -143,13 +143,13 @@ export default function Register() {
 
   return (
     <Container fluid className="Background">
-      <Row className="justify-content-center align-items-center ContainerRow">
-        <Col xs={8}>
+      <Row className="d-flex justify-content-center align-items-center ContainerRow">
+        <Col xs={11} md={8}>
           <Container
-            className="p-4 AuthContainer"
+            className="p-4 AuthContainer my-4 my-md-0"
             style={{ borderRadius: "1rem" }}
           >
-            <Row>
+            <Row className="d-flex flex-column flex-md-row">
               <Col className="d-flex align-items-center justify-content-center">
                 <Image
                   src={VectorImage}
@@ -209,7 +209,7 @@ export default function Register() {
                         </Form.Group>
                       </Col>
                     </Row>
-                    <Row>
+                    <Row className="d-flex flex-column flex-md-row gap-2 gap-md-0">
                       <Col>
                         <Form.Group>
                           <Form.Label className="mb-1 text-primary">
@@ -226,7 +226,6 @@ export default function Register() {
                           />
                         </Form.Group>
                       </Col>
-
                       <Col>
                         <Form.Group>
                           <Form.Label className="mb-1 text-primary">

@@ -36,7 +36,7 @@ const Config = () => {
 
   const handleDeleteAccount = async () => {
     try {
-      await axios.delete(`http://localhost:8080/api/user`, axiosConfig);
+      await axios.delete(`http://3.80.53.161:8080/api/user`, axiosConfig);
       sessionStorage.setItem("token", "");
       navigate("/auth/register");
     } catch (error) {
@@ -45,42 +45,56 @@ const Config = () => {
   };
 
   return (
-    <Container fluid className="vh-100 w-100 p-0 m-0">
-      <Row className="p-0 m-0">
-        <Col xs="4" className="p-0">
-          <Container fluid className="vh-100 bg-primary text-light p-0">
-            <Row className="justify-content-center pt-4">
-              <Col xs="10" className="d-flex gap-3">
-                {/* CONFIGURAÇÕES */}
+    <Container fluid="true" className="vh-100 w-100 p-0 m-0">
+      <Row className="p-0 m-0 d-flex flex-md-row flex-column">
+        <Col md="4" xs="12" className="p-0">
+          <Container
+            fluid="true"
+            className="bg-primary text-light p-0"
+            id="Sidebar"
+          >
+            <Row className="justify-content-center pt-4 m-0">
+              <Col
+                xs="10"
+                className="d-flex gap-3 justify-content-center justify-content-md-start"
+              >
+                {/* VOLTAR */}
                 <Button
                   onClick={handleConfigClick}
-                  className="fs-2 p-0 d-flex gap-3 px-3 border-0"
+                  className="fs-2 p-0 d-flex gap-3 px-3 border-0 text-break"
                 >
                   <i className="bi bi-arrow-return-left"></i>
                   Voltar
                 </Button>
               </Col>
             </Row>
-            <Row className="justify-content-center pt-4">
-              <Col xs="10" className="d-flex gap-3">
-                {/* OPÇÕES */}
+            <Row className="justify-content-center pt-4 m-0">
+              <Col
+                xs="10"
+                className="d-flex gap-3 justify-content-center justify-content-md-start"
+              >
+                {/* LOGOUT */}
                 <Button
                   variant="outline-warning"
                   onClick={handleLogoutScreen}
-                  className="fs-2 p-0 d-flex gap-3 px-3 border-0 w-100"
+                  className="fs-2 p-0 d-flex gap-3 px-3 border-0 text-break"
                 >
                   <i className="bi bi-box-arrow-left"></i>
                   Logout
                 </Button>
               </Col>
             </Row>
-            <Row className="justify-content-center pt-4">
-              <Col xs="10" className="d-flex gap-3">
-                {/* OPÇÕES */}
+            <Row className="justify-content-center pt-4 m-0">
+              <Col
+                xs="10"
+                className="d-flex gap-3 justify-content-center justify-content-md-start pb-4 pb-md-0"
+              >
+                {" "}
+                {/* APAGAR CONTA */}
                 <Button
                   variant="outline-danger"
                   onClick={handleDeleteAccountScreen}
-                  className="fs-2 p-0 d-flex gap-3 px-3 border-0 w-100"
+                  className="fs-2 p-0 d-flex gap-3 px-3 border-0 text-break"
                 >
                   <i className="bi bi-shield-x"></i>
                   Apagar Conta
@@ -89,18 +103,18 @@ const Config = () => {
             </Row>
           </Container>
         </Col>
-        <Col xs="8" className="p-0">
-          <Container fluid className="vh-100 p-0">
+        <Col md="8" xs="12" className="p-0">
+          <Container fluid="true" className="vh-100 p-0 ps-md-5">
             {isOnLogoutScreen ? (
               <Row className="h-100 m-0">
-                <Col className="d-flex align-items-center justify-content-center h-100">
+                <Col className="d-flex align-items-center justify-content-center h-100 flex-column flex-md-row">
                   <Image
                     src={Logout}
-                    fluid
+                    fluid="true"
                     style={{ maxHeight: "50%" }}
                     alt="Logout"
                   />
-                  <div className="d-flex flex-column">
+                  <div className="d-flex flex-column text-center">
                     <h1 className="text-primary ">Deseja mesmo desconectar?</h1>
                     <p className="mb-5 text-center text-dark">
                       Você será redirecionado para a tela de login
@@ -123,15 +137,15 @@ const Config = () => {
               </Row>
             ) : isOnDeleteAccountScreen ? (
               <Row className="h-100 m-0">
-                <Col className="d-flex align-items-center justify-content-center h-100 ">
+                <Col className="d-flex align-items-center justify-content-center h-100 flex-column flex-md-row">
                   <Image
                     src={DeleteAccount}
-                    fluid
+                    fluid="true"
                     style={{ maxHeight: "50%" }}
                     alt="Delete Account"
                   />
 
-                  <div className="d-flex flex-column ">
+                  <div className="d-flex flex-column text-center">
                     <h1 className="text-danger">
                       Deseja mesmo apagar sua conta?
                     </h1>
@@ -166,11 +180,13 @@ const Config = () => {
                 <Col className="d-flex flex-column align-items-center justify-content-center h-100">
                   <Image
                     src={VectorImage}
-                    fluid
+                    fluid="true"
                     style={{ maxHeight: "50%" }}
                     alt="image"
                   />
-                  <h1 className="text-primary">Selecione uma opção ao lado</h1>
+                  <h1 className="text-primary text-center">
+                    Selecione uma opção ao lado
+                  </h1>
                 </Col>
               </Row>
             )}

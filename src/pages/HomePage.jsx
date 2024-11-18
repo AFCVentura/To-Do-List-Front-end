@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import VectorImage from "../assets/register.svg";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import axios from "axios";
 import {
@@ -12,6 +13,7 @@ import {
   TabContainer,
   Table,
   Modal,
+  Image,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
@@ -31,6 +33,11 @@ const HomePage = () => {
   const [isEditingListName, setIsEditingListName] = useState(false);
   const [newListName, setNewListName] = useState("");
 
+  const [errorCreateList, setErrorCreateList] = useState("");
+  const [errorCreateItem, setErrorCreateItem] = useState("");
+  const [errorNotLoadedItem, setErrorNotLoadedItem] = useState("");
+  const [errorNotLoadedList, setErrorNotLoadedList] = useState("");
+
   const token = sessionStorage.getItem("token");
   const axiosConfig = { headers: { Authorization: `Bearer ${token}` } };
 
@@ -42,21 +49,26 @@ const HomePage = () => {
 
   const fetchLists = async () => {
     try {
+      setErrorNotLoadedList("");
       const response = await axios.get(
-        "http://localhost:8080/api/list/all",
+        "http://3.80.53.161:8080/api/list/all",
         axiosConfig
       );
       setLists(response.data || []);
     } catch (error) {
       console.error("Erro ao buscar listas:", error);
+      error
+        ? setErrorNotLoadedList(error.message)
+        : setErrorNotLoadedItem("Erro ao buscar listas");
     }
   };
 
   const handleCreateList = async (e) => {
     try {
       e.preventDefault();
+      setErrorCreateList("");
       const response = await axios.post(
-        "http://localhost:8080/api/list",
+        "http://3.80.53.161:8080/api/list",
         { name: listName, user: null },
         axiosConfig
       );
@@ -64,20 +76,27 @@ const HomePage = () => {
       setListName("");
     } catch (error) {
       console.error("Erro ao criar lista:", error);
+      error
+        ? setErrorCreateList(error.response.data)
+        : setErrorCreateList("Erro ao criar lista");
     }
   };
 
   const handleSelectList = async (id, name) => {
     setCurrentListId(id);
     setCurrentListName(name);
+
+    setErrorNotLoadedItem("");
+
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/item/${id}`,
+        `http://3.80.53.161:8080/api/item/${id}`,
         axiosConfig
       );
       setItems(response.data);
     } catch (error) {
       console.error("Erro ao buscar tarefas:", error);
+      setErrorNotLoadedItem("Erro ao buscar tarefas");
     }
   };
 
@@ -86,7 +105,7 @@ const HomePage = () => {
       return;
     }
     try {
-      await axios.delete(`http://localhost:8080/api/list/${id}`, axiosConfig);
+      await axios.delete(`http://3.80.53.161:8080/api/list/${id}`, axiosConfig);
       setLists(lists.filter((list) => list.id !== id));
       if (currentListId === id) {
         setItems([]);
@@ -99,10 +118,11 @@ const HomePage = () => {
 
   const handleCreateItem = async (e) => {
     e.preventDefault();
+
     if (!currentListId) return;
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/item",
+        "http://3.80.53.161:8080/api/item",
         {
           description: itemDescription,
           state: false,
@@ -110,16 +130,21 @@ const HomePage = () => {
         },
         axiosConfig
       );
+      setErrorCreateItem("");
       setItems([...items, response.data]);
-      setItemDescription("");
     } catch (error) {
       console.error("Erro ao criar tarefa:", error);
+      error
+        ? setErrorCreateItem(error.response.data)
+        : setErrorCreateItem("Erro ao criar item");
+    } finally {
+      setItemDescription("");
     }
   };
 
   const handleDeleteItem = async (id) => {
     try {
-      await axios.delete(`http://localhost:8080/api/item/${id}`, axiosConfig);
+      await axios.delete(`http://3.80.53.161:8080/api/item/${id}`, axiosConfig);
       setItems(items.filter((item) => item.id !== id));
     } catch (error) {
       console.error("Erro ao deletar tarefa:", error);
@@ -129,7 +154,7 @@ const HomePage = () => {
   const handleToggleItemStatus = async (id, currentState) => {
     try {
       await axios.patch(
-        `http://localhost:8080/api/item/${id}`,
+        `http://3.80.53.161:8080/api/item/${id}`,
         { state: !currentState },
         axiosConfig
       );
@@ -148,6 +173,7 @@ const HomePage = () => {
   };
 
   const handleWantToAddList = () => {
+    setErrorCreateList("");
     setWantToAddList(!wantToAddList);
   };
 
@@ -174,7 +200,7 @@ const HomePage = () => {
     e.preventDefault();
     try {
       await axios.patch(
-        `http://localhost:8080/api/item/${id}`,
+        `http://3.80.53.161:8080/api/item/${id}`,
         { description: newDescription },
         axiosConfig
       );
@@ -194,7 +220,7 @@ const HomePage = () => {
     e.preventDefault();
     try {
       await axios.patch(
-        `http://localhost:8080/api/list/${id}`,
+        `http://3.80.53.161:8080/api/list/${id}`,
         { name: newListName },
         axiosConfig
       );
@@ -214,38 +240,62 @@ const HomePage = () => {
   };
 
   return (
-    <Container fluid className="vh-100 w-100 p-0 m-0">
-      <Row className="p-0 m-0">
-        <Col xs="4" className="p-0">
-          <Container fluid className="vh-100 bg-primary text-light p-0">
-            <Row className="justify-content-center pt-4">
-              <Col xs="10" className="d-flex gap-3">
+    <Container fluid="true" className="vh-100 w-100 p-0 m-0">
+      <Row className="p-0 m-0 d-flex flex-md-row flex-column">
+        <Col md="4" xs="12" className="p-0">
+          <Container
+            fluid="true"
+            className="bg-primary text-light p-0"
+            id="Sidebar"
+          >
+            <Row className="justify-content-center pt-4 m-0">
+              <Col
+                xs="10"
+                className="d-flex gap-3 justify-content-center justify-content-md-start"
+              >
                 {/* CONFIGURAÇÕES */}
                 <Button
                   onClick={handleConfigClick}
-                  className="fs-2 p-0 d-flex gap-3 px-3"
+                  className="fs-2 p-0 d-flex gap-3 px-3 text-break"
                 >
-                  <i className="bi bi-gear-fill"></i>
+                  <div className="h-100 d-flex align-items-center">
+                    <i className="bi bi-gear-fill"></i>
+                  </div>
                   Configurações
                 </Button>
               </Col>
             </Row>
-            <Row className="justify-content-center pt-4">
-              <Col xs="10">
+            <Row className="justify-content-center pt-4 m-0">
+              <Col
+                xs="10"
+                className="d-flex gap-3 justify-content-center justify-content-md-start"
+              >
                 {/* BOTÃO ADICIONAR LISTA */}
                 <Button
-                  className="fs-2 p-0 d-flex gap-3 px-3"
-                  onClick={handleWantToAddList}
+                  className="fs-2 p-0 d-flex gap-3 px-3 text-break"
+                  onClick={() => {
+                    handleWantToAddList();
+                    setListName("");
+                  }}
                 >
-                  <i className="bi bi-plus-circle"></i>
+                  {" "}
+                  {wantToAddList ? (
+                    <div className="h-100 d-flex align-items-center">
+                      <i className="bi bi-dash-circle"></i>
+                    </div>
+                  ) : (
+                    <div className="h-100 d-flex align-items-center">
+                      <i className="bi bi-plus-circle"></i>
+                    </div>
+                  )}
                   Adicionar Lista
                 </Button>
               </Col>
             </Row>
             {/* INPUT ADICIONAR LISTA */}
             {wantToAddList && (
-              <Row className="pt-4">
-                <Col xs={{ span: 9, offset: 1 }} className="d-flex gap-3">
+              <Row className="pt-4 m-0">
+                <Col xs={{ span: 10, offset: 1 }} md={{ span: 10, offset: 1 }}>
                   <Form onSubmit={handleCreateList} className="w-100">
                     <Form.Control
                       size="lg"
@@ -254,49 +304,58 @@ const HomePage = () => {
                       value={listName}
                       onChange={(e) => setListName(e.target.value)}
                     />
+                    {errorCreateList && (
+                      <Alert variant="primary" className="mt-1">
+                        {errorCreateList}
+                      </Alert>
+                    )}
                   </Form>
                 </Col>
               </Row>
             )}
             {/* LISTAS */}
-            <Row className="pt-4">
-              <Col xs={{ span: 9, offset: 1 }}>
+            <Row className="pt-4 d-flex gap-3 justify-content-center justify-content-md-start m-0">
+              <Col xs={{ span: 10, offset: 1 }}>
                 <table className="w-100 table-primary table-hover">
                   <tbody>
-                    {lists.map((list) => (
-                      <tr
-                        key={list.id}
-                        onClick={() => handleSelectList(list.id, list.name)}
-                      >
-                        <td className="">
-                          <Button className="w-100 d-flex justify-content-between">
-                            <p className="fs-4 bg-transparent text-light m-0">
-                              {list.name}
-                            </p>
-                            <div className="bg-transparent d-flex align-items-center">
-                              <Button
-                                variant="danger"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openModal(list.id);
-                                }}
-                              >
-                                <i className="bi bi-trash-fill"></i>
-                              </Button>
-                            </div>
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
+                    {errorNotLoadedList ? (
+                      <h2 className="text-danger">{errorNotLoadedList}</h2>
+                    ) : (
+                      lists.map((list) => (
+                        <tr
+                          key={list.id}
+                          onClick={() => handleSelectList(list.id, list.name)}
+                        >
+                          <td className="pb-3">
+                            <Button className="w-100 d-flex justify-content-between align-items-center">
+                              <p className="fs-4 bg-transparent text-light m-0 text-break text-start">
+                                {list.name}
+                              </p>
+                              <div className="bg-transparent d-flex align-items-center justify-content-center flex-column">
+                                <Button
+                                  variant="danger"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openModal(list.id);
+                                  }}
+                                >
+                                  <i className="bi bi-trash-fill"></i>
+                                </Button>
+                              </div>
+                            </Button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </Col>
             </Row>
           </Container>
         </Col>
-        <Col xs="8" className="p-0">
-          <Container fluid className="vh-100 p-0 ps-5">
-            {currentListId && (
+        <Col md="8" xs="12" className="p-0">
+          <Container fluid="true" className="vh-100 p-0 ps-md-5">
+            {currentListId ? (
               <div className="pt-4">
                 {/* LISTA ABERTA */}
                 <Container fluid="true" className="mb-4">
@@ -306,22 +365,28 @@ const HomePage = () => {
                       handleEditList(e, currentListId, newListName);
                     }}
                   >
-                    <Row className="w-100">
-                      <Col xs="4">
-                        <h1 className="text-primary mb-0">{currentListName}</h1>
+                    <Row className="px-3 px-md-0 pe-md-3 m-0">
+                      <Col
+                        xs="12"
+                        md="4"
+                        className=" d-flex align-items-center mb-3 mb-md-0"
+                      >
+                        <h2 className="text-primary mb-0 text-break">
+                          {currentListName}
+                        </h2>
                       </Col>
-                      <Col xs="6" className="p-0">
+                      <Col xs="7" md="6" className="p-0">
                         {isEditingListName && (
                           <Form.Control
                             type="text"
                             placeholder="Novo nome da lista"
                             value={newListName}
                             onChange={(e) => setNewListName(e.target.value)}
-                            className="h-100"
+                            className=""
                           />
                         )}
                       </Col>
-                      <Col xs="2">
+                      <Col xs="5" md="2" className="p-0 ps-2">
                         <Button
                           type={
                             isEditingListName && newListName
@@ -333,7 +398,7 @@ const HomePage = () => {
                             (isEditingListName && newListName) ||
                               setIsEditingListName(!isEditingListName);
                           }}
-                          className="h-100 w-100"
+                          className="w-100"
                         >
                           {isEditingListName && newListName
                             ? "Enviar"
@@ -343,19 +408,20 @@ const HomePage = () => {
                     </Row>
                   </Form>
                 </Container>
-                {/* ADICIONAR LISTA */}
+                {/* ADICIONAR ITEM */}
                 <Form onSubmit={handleCreateItem}>
-                  <Container fluid>
-                    <Row className="w-100">
-                      <Col xs="8" className="p-0">
+                  <Container fluid="true">
+                    <Row className="gap-2 gap-md-0 px-3 px-md-0 pe-md-3 m-0">
+                      <Col xs="12" md="8" className="p-0">
                         <Form.Control
                           type="text"
                           placeholder="Adicionar nova tarefa"
                           value={itemDescription}
                           onChange={(e) => setItemDescription(e.target.value)}
+                          style={{ boxSizing: "border-box" }}
                         />
                       </Col>
-                      <Col xs="4">
+                      <Col xs="12" md="4" className="p-0 ps-md-2">
                         <Button type="submit" className="w-100">
                           Adicionar Tarefa
                         </Button>
@@ -363,58 +429,72 @@ const HomePage = () => {
                     </Row>
                   </Container>
                 </Form>
-
-                {items.length > 0 ? (
-                  <ListGroup className="mt-2 pe-4">
-                    {items.map((item) => (
-                      <ListGroup.Item
-                        key={item.id}
-                        className="d-flex justify-content-between pe-5"
-                      >
-                        <Form.Check
-                          type="checkbox"
-                          label={
-                            <span
-                              style={{
-                                textDecoration: item.state
-                                  ? "line-through"
-                                  : "none",
-                              }}
-                            >
-                              {item.description}
-                            </span>
-                          }
-                          checked={item.state}
-                          onChange={() =>
-                            handleToggleItemStatus(item.id, item.state)
-                          }
-                        />
-                        <div className="d-flex gap-2">
-                          <Button
-                            title="Editar"
-                            variant="info"
-                            size="sm"
-                            onClick={() => openEditItemModal(item.id)}
-                          >
-                            <i className="bi bi-pencil-square"></i>
-                          </Button>
-                          <Button
-                            title="Excluir"
-                            variant="danger"
-                            size="sm"
-                            onClick={() => handleDeleteItem(item.id)}
-                          >
-                            <i className="bi bi-trash-fill"></i>
-                          </Button>
-                        </div>
-                      </ListGroup.Item>
-                    ))}
-                  </ListGroup>
-                ) : (
-                  <Container fluid>
-                    <Row className="w-100">
+                {errorCreateItem && (
+                  <Container fluid="true">
+                    <Row className="px-3 px-md-0 pe-md-3 m-0">
                       <Col xs="12" className="p-0">
-                        <Alert variant="primary" className="mt-2">
+                        <Alert variant="primary" className="mt-2 mb-1">
+                          {errorCreateItem}
+                        </Alert>
+                      </Col>
+                    </Row>
+                  </Container>
+                )}
+                {items.length > 0 ? (
+                  <Container fluid="true">
+                    <Row className="px-3 px-md-0 pe-md-3 m-0">
+                      <ListGroup className="mt-2 pe-0">
+                        {items.map((item) => (
+                          <ListGroup.Item
+                            key={item.id}
+                            className="d-flex justify-content-between "
+                          >
+                            <Form.Check
+                              type="checkbox"
+                              label={
+                                <span
+                                  style={{
+                                    textDecoration: item.state
+                                      ? "line-through"
+                                      : "none",
+                                  }}
+                                >
+                                  {item.description}
+                                </span>
+                              }
+                              checked={item.state}
+                              onChange={() =>
+                                handleToggleItemStatus(item.id, item.state)
+                              }
+                            />
+                            <div className="d-flex gap-2">
+                              <Button
+                                title="Editar"
+                                variant="info"
+                                size="sm"
+                                onClick={() => openEditItemModal(item.id)}
+                              >
+                                <i className="bi bi-pencil-square"></i>
+                              </Button>
+                              <Button
+                                title="Excluir"
+                                variant="danger"
+                                size="sm"
+                                onClick={() => handleDeleteItem(item.id)}
+                              >
+                                <i className="bi bi-trash-fill"></i>
+                              </Button>
+                            </div>
+                          </ListGroup.Item>
+                        ))}
+                      </ListGroup>
+                    </Row>
+                  </Container>
+                ) : (
+                  <Container fluid="true">
+                    <Row className="px-4 px-md-0 pe-md-3 m-0">
+                      <Col xs="12" className="p-0">
+                        <Alert variant="primary" className="mt-2 text-break">
                           Nenhuma tarefa disponível. Adicione uma nova tarefa!
                         </Alert>
                       </Col>
@@ -422,6 +502,18 @@ const HomePage = () => {
                   </Container>
                 )}
               </div>
+            ) : (
+              <Row className="h-100 m-0">
+                <Col className="d-flex flex-column align-items-center justify-content-center h-100">
+                  <Image
+                    src={VectorImage}
+                    fluid="true"
+                    style={{ maxHeight: "50%" }}
+                    alt="image"
+                  />
+                  <h1 className="text-primary text-center">Selecione uma opção ao lado</h1>
+                </Col>
+              </Row>
             )}
           </Container>
         </Col>

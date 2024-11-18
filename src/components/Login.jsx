@@ -37,25 +37,23 @@ export default function Login() {
   return (
     <Container fluid className="Background">
       <Row className="justify-content-center align-items-center ContainerRow">
-        <Col xs={8}>
+        <Col xs={11} md={8}>
           <Container
             className="p-4 AuthContainer"
             style={{ borderRadius: "1rem" }}
           >
-            <Row>
+            <Row className="d-flex flex-column flex-md-row">
               <Col className="d-flex align-items-center justify-content-center">
                 <Image
                   src={VectorImage}
                   fluid
-                  style={{ maxHeight: "75%" }}
+                  style={{ maxHeight: "40vh" }}
                   alt="Register image"
                 />
               </Col>
               <Col>
                 <Container className="RightWrapper d-flex flex-column justify-content-center h-100">
-                  <h1 className="display-5 fw-bold Title text-center">
-                    Login
-                  </h1>
+                  <h1 className="display-5 fw-bold Title text-center">Login</h1>
                   <Form
                     noValidate
                     onSubmit={handleSubmit}
@@ -108,7 +106,7 @@ export default function Login() {
                         </Button>
                       ) : (
                         <Button type="submit" variant="primary" size="lg">
-                          Registrar-se
+                          Login
                         </Button>
                       )}
                       <p className="mb-0 mt-2">Ainda não possui uma conta?</p>
