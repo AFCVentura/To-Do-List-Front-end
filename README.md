@@ -6,15 +6,17 @@ This repository is the React front end. It talks to a Spring Boot REST API backe
 
 ## Screenshots
 
-<!-- Screenshots go here -->
+![Login screen](docs/screenshots/easy_check_login.png)
+
+![Lists and tasks](docs/screenshots/easy_check_main_page.png)
 
 ## Features
 
 - Sign up with live password rules: at least 8 characters, upper and lowercase letters, a number, a special character, no spaces and a matching confirmation
 - Login with a JWT kept in session storage and sent as a Bearer token on every request
 - Route guards that keep logged-out users on the auth pages and logged-in users away from them
-- Lists: create, select and delete, with a confirmation modal before deleting
-- Items: add, delete and mark as done inside the selected list
+- Lists: create, select, edit and delete, with a confirmation modal before deleting
+- Items: add, edit, delete and mark as done inside the selected list
 - Settings page with logout and account deletion
 
 ## Tech stack
